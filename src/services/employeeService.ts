@@ -123,72 +123,37 @@ export class EmployeeService {
   }
   async getEmployeeById(id: number): Promise<Employee> {
     try {
-      // Sử dụng cùng endpoint nhưng filter theo ID cụ thể
-      const requestBody = {
-        fromDate: "2024-06-23T02:40:43.097Z",
-        toDate: "2025-06-23T02:40:43.097Z",
-        type: "Active",
-        userId: id.toString(), // Sử dụng userId để filter theo ID
-        keySearch: "",
-        currentPage: 1,
-        perPage: 1,
-        state: "",
-        profileStatus: "",
-        accountStatus: "",
-      };
-
+      // Gọi API với query string id
       const response = await this.fetchApi<any>(
-        "/admin/AdminCustomer/QLThongTinKhachHang_TruyVanDanhSach",
+        `/admin/AdminCustomer/QLThongTinKhachHang_TruyVanThongTin?id=${id}`,
         {
           method: "POST",
-          body: JSON.stringify(requestBody),
         }
       );
 
       console.log("Employee by ID API Response:", response);
 
+      // Nếu API trả về direct object (single employee)
+      if (response && !Array.isArray(response)) {
+        const mappedEmployee = mapApiResponseToEmployees([response]);
+        if (mappedEmployee.length > 0) {
+          return mappedEmployee[0];
+        }
+      }
+
+      // Nếu API trả về array
       const items = response.items || response.data || response || [];
       const mappedEmployees = mapApiResponseToEmployees(items);
 
-      // Nếu không tìm thấy với userId, thử tìm trong tất cả employees
-      if (mappedEmployees.length === 0) {
-        const allRequestBody = {
-          fromDate: "2024-06-23T02:40:43.097Z",
-          toDate: "2025-06-23T02:40:43.097Z",
-          type: "Active",
-          userId: "",
-          keySearch: "",
-          currentPage: 1,
-          perPage: 100,
-          state: "",
-          profileStatus: "",
-          accountStatus: "",
-        };
-
-        const allResponse = await this.fetchApi<any>(
-          "/admin/AdminCustomer/QLThongTinKhachHang_TruyVanDanhSach",
-          {
-            method: "POST",
-            body: JSON.stringify(allRequestBody),
-          }
-        );
-
-        const allItems =
-          allResponse.items || allResponse.data || allResponse || [];
-        const allMappedEmployees = mapApiResponseToEmployees(allItems);
-
-        // Tìm employee theo ID đã mapping
-        const foundEmployee = allMappedEmployees.find((emp) => emp.id === id);
-        if (!foundEmployee) {
-          throw new Error("Employee not found");
-        }
-        return foundEmployee;
+      if (mappedEmployees.length > 0) {
+        return mappedEmployees[0];
       }
 
-      return mappedEmployees[0];
+      // Nếu không tìm thấy nhân viên, throw error
+      throw new Error(`Không tìm thấy nhân viên có ID: ${id}`);
     } catch (error) {
       console.error("Error in getEmployeeById:", error);
-      throw error;
+      throw new Error(`Không thể lấy thông tin nhân viên có ID: ${id}`);
     }
   }
 
@@ -242,37 +207,6 @@ export class EmployeeService {
       return mapApiResponseToEmployees(items);
     } catch (error) {
       console.error("Error in searchEmployees:", error);
-      throw error;
-    }
-  }
-
-  async getEmployeesByDepartment(department: string): Promise<Employee[]> {
-    try {
-      const requestBody = {
-        fromDate: "2024-06-23T02:40:43.097Z",
-        toDate: "2025-06-23T02:40:43.097Z",
-        type: "Active",
-        userId: "",
-        keySearch: department,
-        currentPage: 1,
-        perPage: 100,
-        state: "",
-        profileStatus: "",
-        accountStatus: "",
-      };
-
-      const response = await this.fetchApi<any>(
-        "/QLThongTinKhachHang_TruyVanDanhSach",
-        {
-          method: "POST",
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      const items = response.items || response.data || response || [];
-      return mapApiResponseToEmployees(items);
-    } catch (error) {
-      console.error("Error in getEmployeesByDepartment:", error);
       throw error;
     }
   }
