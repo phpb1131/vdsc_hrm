@@ -20,53 +20,49 @@ function mapApiResponseToEmployees(apiItems: any[]): Employee[] {
 }
 
 export class EmployeeService {
-    private getBearerToken(): string {
-        // Lấy token từ AuthService hoặc cookies
-        let token = AuthService.getToken();
-
-        // Fallback: đọc từ cookies nếu không có trong localStorage
-        if (!token && typeof window !== 'undefined') {
-            const cookies = document.cookie.split(';');
-            const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('accessToken='));
-            if (tokenCookie) {
-                token = tokenCookie.split('=')[1];
-            }
-        }
-
-        return token || process.env.NEXT_PUBLIC_API_TOKEN || '';
-    }
-
+    /**
+     * Gọi API với bảo mật tự động qua AuthService
+     */
     private async fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
         const url = `${API_BASE_URL}${endpoint}`;
-        const token = this.getBearerToken();
+
+        // 🔐 Sử dụng AuthService tập trung để lấy token
+        const token = AuthService.getBearerToken();
 
         const defaultOptions: RequestInit = {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                ...(token && { 'Authorization': `Bearer ${token}` }),
+                'Authorization': `Bearer ${token}`,
             },
             mode: 'cors',
             credentials: 'omit',
+            ...options,
         };
 
         try {
-            console.log('API Request:', { url, options: { ...defaultOptions, ...options } });
+            console.log('🔐 Employee API Call:', { endpoint, method: options?.method || 'GET' });
 
-            const response = await fetch(url, { ...defaultOptions, ...options });
+            const response = await fetch(url, defaultOptions);
 
-            console.log('API Response:', { status: response.status, statusText: response.statusText });
+            // Xử lý lỗi authentication - AuthService sẽ handle logout
+            if (response.status === 401) {
+                console.warn('Token expired. Logging out...');
+                AuthService.logout();
+                throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
+            }
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP Error: ${response.status} - ${response.statusText}`);
+                throw new Error(errorData.message || `Lỗi API: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('API Response Data:', data);
+            console.log('✅ Employee API Success:', endpoint);
             return data;
+
         } catch (error) {
-            console.error('API Request failed:', error);
+            console.error('❌ Employee API Error:', error);
             throw error;
         }
     } async getAllEmployees(): Promise<Employee[]> {
