@@ -8,12 +8,11 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { AuthService } from '../../utils/auth';
-import { ROUTES } from '../../constants/routes';
 
 export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const returnUrl = searchParams.get('returnUrl') || ROUTES.EMPLOYEES;
+    const returnUrl = searchParams.get('returnUrl');
 
     const [formData, setFormData] = useState({
         username: '',
@@ -70,12 +69,11 @@ export default function LoginPage() {
                     fullName: data.entity.fullName,
                     id: data.entity.id
                 };
-                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                localStorage.setItem('userInfo', JSON.stringify(userInfo)); console.log('Login successful:', data);
 
-                console.log('Login successful:', data);
-
-                // Redirect to return URL or employees page
-                router.push(returnUrl);
+                // Redirect to return URL or employees page (default)
+                const redirectUrl = returnUrl || '/employees';
+                router.push(redirectUrl);
             } else {
                 // Handle login failure
                 setError(data.message || 'Tên đăng nhập hoặc mật khẩu không đúng');

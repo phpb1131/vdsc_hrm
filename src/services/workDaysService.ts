@@ -33,13 +33,46 @@ function mapApiResponseToWorkDays(apiItems: any[]): WorkDays[] {
  */
 export class WorkDaysService {
     /**
-     * Gọi API với bảo mật tự động qua AuthService
+     * Kiểm tra authentication trước mỗi API call
+     */
+    private checkAuthentication(): void {
+        if (!AuthService.isAuthenticated()) {
+            console.warn('User not authenticated. Redirecting to login...');
+            AuthService.logout();
+            throw new Error('Vui lòng đăng nhập để tiếp tục');
+        }
+    }
+
+    /**
+     * Lấy token với kiểm tra bảo mật
+     */
+    private getBearerToken(): string {
+        this.checkAuthentication();
+
+        let token = AuthService.getToken();
+
+        if (!token && typeof window !== 'undefined') {
+            const cookies = document.cookie.split(';');
+            const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('accessToken='));
+            if (tokenCookie) {
+                token = tokenCookie.split('=')[1];
+            }
+        }
+
+        if (!token) {
+            AuthService.logout();
+            throw new Error('Token không hợp lệ. Vui lòng đăng nhập lại');
+        }
+
+        return token;
+    }
+
+    /**
+     * Gọi API với bảo mật tự động
      */
     private async fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
         const url = `${API_BASE_URL}${endpoint}`;
-
-        // 🔐 Sử dụng AuthService tập trung để lấy token
-        const token = AuthService.getBearerToken();
+        const token = this.getBearerToken();
 
         const defaultOptions: RequestInit = {
             headers: {
@@ -57,7 +90,7 @@ export class WorkDaysService {
 
             const response = await fetch(url, defaultOptions);
 
-            // Xử lý lỗi authentication - AuthService sẽ handle logout
+            // Xử lý lỗi authentication
             if (response.status === 401) {
                 console.warn('Token expired. Logging out...');
                 AuthService.logout();
