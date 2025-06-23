@@ -1,31 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockEmployees } from '../../../../utils/mockData';
+import { withAuth, withRole, AuthenticatedRequest } from '../../../../middleware/auth';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://localhost:7251/admin';
 
 // GET /api/employees/[id] - Lấy thông tin nhân viên theo ID
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const { id } = await params;
-        const employeeId = parseInt(id);
-        const employee = mockEmployees.find(emp => emp.id === employeeId);
+    return withAuth(request, async (authenticatedRequest: AuthenticatedRequest) => {
+        try {
+            const { id } = await params;
 
-        if (!employee) {
+            // Forward request to external API với authentication
+            const response = await fetch(`${API_BASE_URL}/admin/AdminCustomer/QLThongTinKhachHang_TruyVanDanhSach`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': request.headers.get('Authorization') || '',
+                },
+                body: JSON.stringify({
+                    fromDate: "2024-06-23T02:40:43.097Z",
+                    toDate: "2025-06-23T02:40:43.097Z",
+                    type: "Active",
+                    userId: id,
+                    keySearch: "",
+                    currentPage: 1,
+                    perPage: 1,
+                    state: "",
+                    profileStatus: "",
+                    accountStatus: ""
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`External API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return NextResponse.json(data);
+
+        } catch (error) {
+            console.error('Error fetching employee:', error);
             return NextResponse.json(
-                { error: 'Không tìm thấy nhân viên' },
-                { status: 404 }
+                { error: 'Internal Server Error' },
+                { status: 500 }
             );
         }
-
-        return NextResponse.json(employee);
-    } catch (error) {
-        console.error('Error fetching employee:', error);
-        return NextResponse.json(
-            { error: 'Internal Server Error' },
-            { status: 500 }
-        );
-    }
+    });
 }
 
 // PUT /api/employees/[id] - Cập nhật thông tin nhân viên
@@ -33,63 +55,54 @@ export async function PUT(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const { id } = await params;
-        const employeeId = parseInt(id);
-        const body = await request.json();
+    return withAuth(request, async (authenticatedRequest: AuthenticatedRequest) => {
+        return withRole(['admin', 'hr'], authenticatedRequest, async () => {
+            try {
+                const { id } = await params;
+                const body = await request.json();
 
-        const employeeIndex = mockEmployees.findIndex(emp => emp.id === employeeId);
+                // Forward to external API
+                // TODO: Implement actual update API call
+                return NextResponse.json(
+                    { message: 'Update endpoint - to be implemented' },
+                    { status: 501 }
+                );
 
-        if (employeeIndex === -1) {
-            return NextResponse.json(
-                { error: 'Không tìm thấy nhân viên' },
-                { status: 404 }
-            );
-        }
-
-        // Update employee
-        mockEmployees[employeeIndex] = {
-            ...mockEmployees[employeeIndex],
-            ...body,
-            id: employeeId // Ensure ID doesn't change
-        };
-
-        return NextResponse.json(mockEmployees[employeeIndex]);
-    } catch (error) {
-        console.error('Error updating employee:', error);
-        return NextResponse.json(
-            { error: 'Internal Server Error' },
-            { status: 500 }
-        );
-    }
+            } catch (error) {
+                console.error('Error updating employee:', error);
+                return NextResponse.json(
+                    { error: 'Internal Server Error' },
+                    { status: 500 }
+                );
+            }
+        });
+    });
 }
 
-// DELETE /api/employees/[id] - Xóa nhân viên
+// DELETE /api/employees/[id] - Xóa nhân viên  
 export async function DELETE(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const { id } = await params;
-        const employeeId = parseInt(id);
-        const employeeIndex = mockEmployees.findIndex(emp => emp.id === employeeId);
+    return withAuth(request, async (authenticatedRequest: AuthenticatedRequest) => {
+        return withRole(['admin'], authenticatedRequest, async () => {
+            try {
+                const { id } = await params;
 
-        if (employeeIndex === -1) {
-            return NextResponse.json(
-                { error: 'Không tìm thấy nhân viên' },
-                { status: 404 }
-            );
-        }
+                // Forward to external API
+                // TODO: Implement actual delete API call
+                return NextResponse.json(
+                    { message: 'Delete endpoint - to be implemented' },
+                    { status: 501 }
+                );
 
-        // Remove employee from array
-        mockEmployees.splice(employeeIndex, 1);
-
-        return NextResponse.json({ message: 'Xóa nhân viên thành công' });
-    } catch (error) {
-        console.error('Error deleting employee:', error);
-        return NextResponse.json(
-            { error: 'Internal Server Error' },
-            { status: 500 }
-        );
-    }
+            } catch (error) {
+                console.error('Error deleting employee:', error);
+                return NextResponse.json(
+                    { error: 'Internal Server Error' },
+                    { status: 500 }
+                );
+            }
+        });
+    });
 }

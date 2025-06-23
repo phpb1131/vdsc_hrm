@@ -21,8 +21,19 @@ function mapApiResponseToEmployees(apiItems: any[]): Employee[] {
 
 export class EmployeeService {
     private getBearerToken(): string {
-        // Lấy token từ AuthService
-        return AuthService.getToken() || process.env.NEXT_PUBLIC_API_TOKEN || '';
+        // Lấy token từ AuthService hoặc cookies
+        let token = AuthService.getToken();
+
+        // Fallback: đọc từ cookies nếu không có trong localStorage
+        if (!token && typeof window !== 'undefined') {
+            const cookies = document.cookie.split(';');
+            const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('accessToken='));
+            if (tokenCookie) {
+                token = tokenCookie.split('=')[1];
+            }
+        }
+
+        return token || process.env.NEXT_PUBLIC_API_TOKEN || '';
     }
 
     private async fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {

@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockWorkDays } from '../../../../utils/mockData';
-
-// Use centralized mock data
 
 // GET /api/workdays/[id] - Lấy thông tin bảng công theo ID
 export async function GET(
@@ -10,19 +7,14 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
-        const workDaysId = parseInt(id);
-        const workDays = mockWorkDays.find(item => item.id === workDaysId);
 
-        if (!workDays) {
-            return NextResponse.json(
-                { error: 'Không tìm thấy bảng công' },
-                { status: 404 }
-            );
-        }
-
-        return NextResponse.json(workDays);
+        // Redirect to external API or return not implemented
+        return NextResponse.json(
+            { error: 'API endpoint not implemented. Use external API directly.' },
+            { status: 501 }
+        );
     } catch (error) {
-        console.error('Error fetching work days:', error);
+        console.error('Error fetching workdays:', error);
         return NextResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }
@@ -37,26 +29,14 @@ export async function PUT(
 ) {
     try {
         const { id } = await params;
-        const workDaysId = parseInt(id);
-        const body = await request.json(); const workDaysIndex = mockWorkDays.findIndex(item => item.id === workDaysId);
 
-        if (workDaysIndex === -1) {
-            return NextResponse.json(
-                { error: 'Không tìm thấy bảng công' },
-                { status: 404 }
-            );
-        }
-
-        // Update work days
-        mockWorkDays[workDaysIndex] = {
-            ...mockWorkDays[workDaysIndex],
-            ...body,
-            id: workDaysId // Ensure ID doesn't change
-        };
-
-        return NextResponse.json(mockWorkDays[workDaysIndex]);
+        // Redirect to external API or return not implemented
+        return NextResponse.json(
+            { error: 'API endpoint not implemented. Use external API directly.' },
+            { status: 501 }
+        );
     } catch (error) {
-        console.error('Error updating work days:', error);
+        console.error('Error updating workdays:', error);
         return NextResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }
@@ -71,22 +51,14 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params;
-        const workDaysId = parseInt(id);
-        const workDaysIndex = mockWorkDays.findIndex(item => item.id === workDaysId);
 
-        if (workDaysIndex === -1) {
-            return NextResponse.json(
-                { error: 'Không tìm thấy bảng công' },
-                { status: 404 }
-            );
-        }
-
-        // Remove work days from array
-        mockWorkDays.splice(workDaysIndex, 1);
-
-        return NextResponse.json({ message: 'Xóa bảng công thành công' });
+        // Redirect to external API or return not implemented
+        return NextResponse.json(
+            { error: 'API endpoint not implemented. Use external API directly.' },
+            { status: 501 }
+        );
     } catch (error) {
-        console.error('Error deleting work days:', error);
+        console.error('Error deleting workdays:', error);
         return NextResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }

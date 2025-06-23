@@ -3,10 +3,12 @@
 export const AuthTokenKey = 'hrm_auth_token';
 
 export class AuthService {
-  // Lưu token vào localStorage
+  // Lưu token vào localStorage và cookies
   static setToken(token: string): void {
     if (typeof window !== 'undefined') {
       localStorage.setItem(AuthTokenKey, token);
+      // Set cookie for middleware access
+      document.cookie = `${AuthTokenKey}=${token}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
     }
   }
 
@@ -18,10 +20,12 @@ export class AuthService {
     return null;
   }
 
-  // Xóa token
+  // Xóa token từ localStorage và cookies
   static removeToken(): void {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(AuthTokenKey);
+      // Remove cookie
+      document.cookie = `${AuthTokenKey}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
   }
 
@@ -29,14 +33,34 @@ export class AuthService {
   static isAuthenticated(): boolean {
     const token = this.getToken();
     return !!token;
-  }
-
-  // Logout method
+  }    // Logout method
   static logout(): void {
     this.removeToken();
-    // Redirect to login page if needed
+    // Remove cookies
     if (typeof window !== 'undefined') {
+      document.cookie = 'hrm_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      localStorage.removeItem('userInfo');
+
+      // Redirect to login page
       window.location.href = '/login';
+    }
+  }
+
+  // Get user info
+  static getUserInfo(): any {
+    if (typeof window !== 'undefined') {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo) : null;
+    }
+    return null;
+  }
+
+  // Set user info
+  static setUserInfo(userInfo: any): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
     }
   }
 }
@@ -55,7 +79,9 @@ export function useAuth() {
   return {
     isAuthenticated: AuthService.isAuthenticated(),
     token: AuthService.getToken(),
+    userInfo: AuthService.getUserInfo(),
     logout: AuthService.logout,
     setToken: AuthService.setToken,
+    setUserInfo: AuthService.setUserInfo,
   };
 }

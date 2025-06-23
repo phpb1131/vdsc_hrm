@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { AuthService } from "../utils/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/sidebar.css";
 
@@ -17,6 +18,10 @@ export default function Sidebar() {
 
   // Để đóng sidebar sau khi bấm chọn menu (trên mobile)
   const handleNavClick = () => setShow(false);
+
+  const handleLogout = () => {
+    AuthService.logout();
+  };
 
   return (
     <>
@@ -59,9 +64,13 @@ export default function Sidebar() {
             </li>
           ))}
           <li className="nav-item mt-auto">
-            <Link href="/logout" className="nav-link px-4 py-2 text-warning" onClick={handleNavClick}>
+            <button
+              className="nav-link px-4 py-2 text-warning bg-transparent border-0 w-100 text-start"
+              onClick={handleLogout}
+            >
+              <i className="bi bi-box-arrow-right me-2"></i>
               Đăng xuất
-            </Link>
+            </button>
           </li>
         </ul>
       </div>
@@ -103,9 +112,13 @@ export default function Sidebar() {
             </li>
           ))}
           <li className="nav-item mt-auto">
-            <Link href="/logout" className="nav-link px-4 py-2 text-warning" onClick={handleNavClick}>
+            <button
+              className="nav-link px-4 py-2 text-warning bg-transparent border-0 w-100 text-start"
+              onClick={() => { handleLogout(); handleNavClick(); }}
+            >
+              <i className="bi bi-box-arrow-right me-2"></i>
               Đăng xuất
-            </Link>
+            </button>
           </li>
         </ul>
       </div>
