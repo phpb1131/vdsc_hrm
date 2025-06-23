@@ -1,0 +1,27 @@
+.sidebar {
+  background: #222e3c !important;
+  transition: transform 0.25s ease;
+}
+@media (max-width: 767.98px) {
+  .sidebar {
+    display: none !important;
+  }
+  .sidebar.offcanvas-mobile {
+    display: block !important;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  }
+  .sidebar.offcanvas-mobile.show-mobile {
+    transform: translateX(0);
+  }
+  .offcanvas-backdrop {
+    position: fixed;
+    z-index: 1040;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+  }
+}

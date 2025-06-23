@@ -1,0 +1,166 @@
+/* Responsive Data View Styles */
+.responsive-data-view {
+    width: 100%;
+}
+
+/* Card hover effect */
+.card-hover {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Data Table Responsive */
+.data-table-container {
+    width: 100%;
+}
+
+.data-table-container .table-responsive {
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+}
+
+.data-table-container .table-responsive .table {
+    margin-bottom: 0;
+}
+
+/* Custom scrollbar for table */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Mobile optimizations */
+@media (max-width: 575.98px) {
+    .responsive-data-view .card {
+        margin-bottom: 1rem;
+    }
+    
+    .responsive-data-view .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-group .btn {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .responsive-data-view .row .col-12 {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Search and pagination improvements */
+.data-table-controls {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .data-table-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .data-table-controls .btn-group {
+        justify-content: center;
+    }
+}
+
+/* Loading state */
+.loading-overlay {
+    position: relative;
+}
+
+.loading-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+    border-radius: 0.375rem;
+}
+
+/* Empty state */
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+/* Badge improvements */
+.badge {
+    font-size: 0.75em;
+    padding: 0.35em 0.65em;
+}
+
+/* Button improvements */
+.btn-group .btn {
+    border-radius: 0.375rem;
+}
+
+.btn-group .btn:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-right: -1px;
+}
+
+.btn-group .btn:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Avatar improvements */
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+/* Status improvements */
+.status-active {
+    background: linear-gradient(45deg, #28a745, #20c997) !important;
+}
+
+.status-inactive {
+    background: linear-gradient(45deg, #dc3545, #fd7e14) !important;
+}
