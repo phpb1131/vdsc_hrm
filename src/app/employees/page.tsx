@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
@@ -13,16 +13,29 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Employee } from "../../types/employee";
 import { useEmployees } from "../../hooks/useEmployees";
+import ComboboxSelect from "@/components/ComboboxSelect";
+import { ParamType } from "@/constants/common";
+import DateTimePicker from "@/components/DateTimePicker";
+import DateRangePicker from "@/components/DateRangePicker";
 
 export default function EmployeesPage() {
   const router = useRouter();
-  const { employees, loading, error, refreshEmployees, clearError } =
-    useEmployees({ autoLoad: true });
+  const {
+    employees,
+    loading,
+    error,
+    loadEmployees,
+    refreshEmployees,
+    clearError,
+  } = useEmployees({ autoLoad: true });
   const [searchTerm, setSearchTerm] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [currentSearchTerm, setCurrentSearchTerm] = useState("");
   const [currentDepartmentFilter, setCurrentDepartmentFilter] = useState("");
-
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [date, setDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const handleEdit = (employee: Employee) => {
     alert(`Chỉnh sửa nhân viên: ${employee.fullName}`);
     // TODO: Implement edit functionality
@@ -36,28 +49,42 @@ export default function EmployeesPage() {
       alert("Không thể xóa nhân viên. Vui lòng thử lại.");
     }
   };
+
   const handleView = (employee: Employee) => {
     router.push(`/employees/${employee.id}`);
   };
+
   const handleAddEmployee = () => {
     alert("Thêm nhân viên mới");
     // TODO: Implement add functionality
   };
 
-  const handleSearch = () => {
+  const handleDepartmentChange = useCallback((value: string) => {
+    setDepartmentFilter(value);
+  }, []);
+
+  const handleProductChange = useCallback((value: string) => {
+    setSelectedProduct(value);
+  }, []);
+  // Memoize search và clear functions
+  const handleSearch = useCallback(() => {
     setCurrentSearchTerm(searchTerm);
     setCurrentDepartmentFilter(departmentFilter);
-    // TODO: Gọi API với searchTerm và departmentFilter
-    refreshEmployees();
-  };
+    // Truyền startDate và endDate vào loadEmployees
+    loadEmployees(startDate, endDate);
+  }, [searchTerm, departmentFilter, startDate, endDate, loadEmployees]);
 
-  const handleClearFilter = () => {
+  const handleClearFilter = useCallback(() => {
     setSearchTerm("");
     setDepartmentFilter("");
     setCurrentSearchTerm("");
     setCurrentDepartmentFilter("");
-    refreshEmployees();
-  };
+    setSelectedProduct("");
+    setStartDate(null);
+    setEndDate(null);
+    // Load lại với date range mặc định (null, null)
+    loadEmployees(null, null);
+  }, [loadEmployees]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -71,9 +98,9 @@ export default function EmployeesPage() {
   };
 
   // Get unique departments for filter
-  const departments = useMemo(() => {
-    return Array.from(new Set(employees.map((emp) => emp.department)));
-  }, [employees]); // Filter employees based on current search term and department (client-side filtering)
+  // const departments = useMemo(() => {
+  //   return Array.from(new Set(employees.map((emp) => emp.department)));
+  // }, [employees]); // Filter employees based on current search term and department (client-side filtering)
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
       const matchesSearch =
@@ -115,7 +142,7 @@ export default function EmployeesPage() {
   }
 
   return (
-    <Container fluid className="p-4">
+    <Container fluid className="p-0" style={{ minHeight: "80vh" }}>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 mb-0">
           <i className="bi bi-people-fill me-2"></i>
@@ -149,29 +176,34 @@ export default function EmployeesPage() {
       <Card>
         <Card.Header>
           <Row className="align-items-center">
-            <Col md={6}>
+            <Col md={2}>
               <h6 className="mb-0">
                 Danh sách nhân viên ({filteredEmployees.length}/
                 {employees.length})
               </h6>
             </Col>{" "}
-            <Col md={6}>
+            <Col md={10}>
               <Row className="g-2">
-                <Col sm={4}>
-                  <Form.Select
+                {" "}
+                <Col sm={3}>
+                  <DateTimePicker
+                    value={date}
+                    onChange={setDate}
+                    placeholder="Chọn ngày sinh"
                     size="sm"
-                    value={departmentFilter}
-                    onChange={(e) => setDepartmentFilter(e.target.value)}
-                  >
-                    <option value="">Tất cả phòng ban</option>
-                    {departments.map((dept) => (
-                      <option key={dept} value={dept}>
-                        {dept}
-                      </option>
-                    ))}
-                  </Form.Select>
+                    showTime={false} // Hoặc bỏ qua vì mặc định là false
+                  />
                 </Col>
-                <Col sm={5}>
+                <Col sm={3}>
+                  <ComboboxSelect
+                    paramType={ParamType.TINHTHANH}
+                    value={selectedProduct}
+                    onChange={handleProductChange}
+                    placeholder="Tất cả"
+                    // required
+                  />
+                </Col>
+                <Col sm={3}>
                   <InputGroup size="sm">
                     <InputGroup.Text>
                       <i className="bi bi-search"></i>
@@ -208,6 +240,16 @@ export default function EmployeesPage() {
                       Xóa bộ lọc
                     </Button>
                   </div>
+                </Col>
+              </Row>
+              <Row className="g-2">
+                <Col sm={3}>
+                  <DateRangePicker
+                    startDate={startDate}
+                    endDate={endDate}
+                    onStartDateChange={setStartDate}
+                    onEndDateChange={setEndDate}
+                  />
                 </Col>
               </Row>
             </Col>

@@ -10,6 +10,14 @@ const API_BASE_URL =
 
 // Helper function để mapping dữ liệu từ API response sang Employee format
 function mapApiResponseToEmployees(apiItems: any[]): Employee[] {
+  // Validation đầu vào
+  if (!Array.isArray(apiItems)) {
+    console.error(
+      "mapApiResponseToEmployees: Input không phải array:",
+      apiItems
+    );
+    return [];
+  }
   return apiItems.map((item: any, index: number) => ({
     id: item.id || index + 1,
     employeeCode:
@@ -57,13 +65,7 @@ export class EmployeeService {
       credentials: "omit",
       ...options,
     };
-
     try {
-      console.log("🔐 Employee API Call:", {
-        endpoint,
-        method: options?.method || "GET",
-      });
-
       const response = await fetch(url, defaultOptions);
 
       // Xử lý lỗi authentication - AuthService sẽ handle logout
@@ -79,18 +81,29 @@ export class EmployeeService {
       }
 
       const data = await response.json();
-      console.log("✅ Employee API Success:", endpoint);
       return data;
     } catch (error) {
       console.error("❌ Employee API Error:", error);
       throw error;
     }
   }
-  async getAllEmployees(): Promise<Employee[]> {
+  async getAllEmployees(
+    fromDate?: Date | null,
+    toDate?: Date | null
+  ): Promise<Employee[]> {
     try {
+      // Chuyển đổi Date thành string ISO hoặc dùng default values
+      const defaultFromDate = "1990-06-23T02:40:43.097Z";
+      const defaultToDate = "2025-06-23T02:40:43.097Z";
+
+      const fromDateString = fromDate
+        ? fromDate.toISOString()
+        : defaultFromDate;
+      const toDateString = toDate ? toDate.toISOString() : defaultToDate;
+
       const requestBody = {
-        fromDate: "2024-06-23T02:40:43.097Z",
-        toDate: "2025-06-23T02:40:43.097Z",
+        fromDate: fromDateString,
+        toDate: toDateString,
         type: "Active",
         userId: "",
         keySearch: "",
@@ -100,7 +113,6 @@ export class EmployeeService {
         profileStatus: "",
         accountStatus: "",
       };
-
       const response = await this.fetchApi<any>(
         "/admin/AdminCustomer/QLThongTinKhachHang_TruyVanDanhSach",
         {
@@ -109,11 +121,24 @@ export class EmployeeService {
         }
       );
 
-      // Log response để debug
-      console.log("Employee API Response:", response);
+      // Xử lý response theo cấu trúc: { totalItems, currentPage, totalPages, items: [...] }
+      let items = [];
 
-      // Lấy data từ response.items (theo cấu trúc API của bạn)
-      const items = response.items || response.data || response || [];
+      if (response && typeof response === "object") {
+        if (Array.isArray(response.items)) {
+          items = response.items;
+        } else if (Array.isArray(response.data)) {
+          items = response.data;
+        } else if (Array.isArray(response)) {
+          items = response;
+        } else {
+          console.warn("API response không có cấu trúc mong đợi:", response);
+          items = [];
+        }
+      } else {
+        console.warn("API response không phải object:", response);
+        items = [];
+      }
 
       return mapApiResponseToEmployees(items);
     } catch (error) {
@@ -131,8 +156,6 @@ export class EmployeeService {
         }
       );
 
-      console.log("Employee by ID API Response:", response);
-
       // Nếu API trả về direct object (single employee)
       if (response && !Array.isArray(response)) {
         const mappedEmployee = mapApiResponseToEmployees([response]);
@@ -141,8 +164,18 @@ export class EmployeeService {
         }
       }
 
-      // Nếu API trả về array
-      const items = response.items || response.data || response || [];
+      // Nếu API trả về cấu trúc có items array
+      let items = [];
+      if (response && typeof response === "object") {
+        if (Array.isArray(response.items)) {
+          items = response.items;
+        } else if (Array.isArray(response.data)) {
+          items = response.data;
+        } else if (Array.isArray(response)) {
+          items = response;
+        }
+      }
+
       const mappedEmployees = mapApiResponseToEmployees(items);
 
       if (mappedEmployees.length > 0) {
@@ -194,7 +227,6 @@ export class EmployeeService {
         profileStatus: "",
         accountStatus: "",
       };
-
       const response = await this.fetchApi<any>(
         "/QLThongTinKhachHang_TruyVanDanhSach",
         {
@@ -203,7 +235,18 @@ export class EmployeeService {
         }
       );
 
-      const items = response.items || response.data || response || [];
+      // Xử lý response theo cấu trúc có items array
+      let items = [];
+      if (response && typeof response === "object") {
+        if (Array.isArray(response.items)) {
+          items = response.items;
+        } else if (Array.isArray(response.data)) {
+          items = response.data;
+        } else if (Array.isArray(response)) {
+          items = response;
+        }
+      }
+
       return mapApiResponseToEmployees(items);
     } catch (error) {
       console.error("Error in searchEmployees:", error);

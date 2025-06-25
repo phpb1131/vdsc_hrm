@@ -1,0 +1,53 @@
+/* DatePicker responsive styles */
+.react-datepicker-wrapper {
+  width: 100% !important;
+  display: block !important;
+}
+
+.react-datepicker__input-container {
+  width: 100% !important;
+  display: block !important;
+}
+
+.react-datepicker__input-container input {
+  width: 100% !important;
+}
+
+/* DatePicker popup positioning */
+.react-datepicker-popper {
+  z-index: 1050; /* Bootstrap modal z-index compatibility */
+}
+
+/* Custom styles for better Bootstrap integration */
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range {
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  li.react-datepicker__time-list-item--selected {
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+/* Ensure mobile responsiveness */
+@media (max-width: 576px) {
+  .react-datepicker-wrapper,
+  .react-datepicker__input-container {
+    width: 100% !important;
+  }
+
+  .react-datepicker {
+    font-size: 0.875rem;
+  }
+}

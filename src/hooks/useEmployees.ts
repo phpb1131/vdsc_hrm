@@ -16,7 +16,10 @@ interface UseEmployeesReturn {
   employees: Employee[];
   loading: boolean;
   error: string | null;
-  loadEmployees: () => Promise<void>;
+  loadEmployees: (
+    fromDate?: Date | null,
+    toDate?: Date | null
+  ) => Promise<void>;
   createEmployee: (employee: EmployeeCreateRequest) => Promise<void>;
   updateEmployee: (
     id: number,
@@ -44,24 +47,26 @@ export function useEmployees(
   const clearError = useCallback(() => {
     setError(null);
   }, []);
-
-  const loadEmployees = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await service.getAllEmployees();
-      setEmployees(data);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Không thể tải danh sách nhân viên";
-      setError(errorMessage);
-      console.error("Error loading employees:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [service]);
+  const loadEmployees = useCallback(
+    async (fromDate?: Date | null, toDate?: Date | null) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await service.getAllEmployees(fromDate, toDate);
+        setEmployees(data);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : "Không thể tải danh sách nhân viên";
+        setError(errorMessage);
+        console.error("Error loading employees:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [service]
+  );
 
   const createEmployee = useCallback(
     async (employee: EmployeeCreateRequest) => {
