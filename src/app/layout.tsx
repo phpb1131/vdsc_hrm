@@ -18,7 +18,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Sidebar />
         <div
           className="main-content"
-          style={{ marginLeft: 210, padding: 24 }}
+          style={{
+            marginLeft: 210,
+            padding: 24,
+            height: "100vh",
+            overflowY: "auto",
+          }}
         >
           {children}
         </div>
