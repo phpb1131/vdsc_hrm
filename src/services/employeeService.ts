@@ -132,7 +132,7 @@ export class EmployeeService {
         } else if (Array.isArray(response)) {
           items = response;
         } else {
-          console.warn("API response không có cấu trúc mong đợi:", response);
+          //console.warn("API response không có cấu trúc mong đợi:", response);
           items = [];
         }
       } else {
@@ -213,46 +213,46 @@ export class EmployeeService {
     });
   }
 
-  async searchEmployees(query: string): Promise<Employee[]> {
-    try {
-      const requestBody = {
-        fromDate: "2024-06-23T02:40:43.097Z",
-        toDate: "2025-06-23T02:40:43.097Z",
-        type: "Active",
-        userId: "",
-        keySearch: query,
-        currentPage: 1,
-        perPage: 100,
-        state: "",
-        profileStatus: "",
-        accountStatus: "",
-      };
-      const response = await this.fetchApi<any>(
-        "/QLThongTinKhachHang_TruyVanDanhSach",
-        {
-          method: "POST",
-          body: JSON.stringify(requestBody),
-        }
-      );
+  // async searchEmployees(query: string): Promise<Employee[]> {
+  //   try {
+  //     const requestBody = {
+  //       fromDate: "2024-06-23T02:40:43.097Z",
+  //       toDate: "2025-06-23T02:40:43.097Z",
+  //       type: "Active",
+  //       userId: "",
+  //       keySearch: query,
+  //       currentPage: 1,
+  //       perPage: 100,
+  //       state: "",
+  //       profileStatus: "",
+  //       accountStatus: "",
+  //     };
+  //     const response = await this.fetchApi<any>(
+  //       "/QLThongTinKhachHang_TruyVanDanhSach",
+  //       {
+  //         method: "POST",
+  //         body: JSON.stringify(requestBody),
+  //       }
+  //     );
 
-      // Xử lý response theo cấu trúc có items array
-      let items = [];
-      if (response && typeof response === "object") {
-        if (Array.isArray(response.items)) {
-          items = response.items;
-        } else if (Array.isArray(response.data)) {
-          items = response.data;
-        } else if (Array.isArray(response)) {
-          items = response;
-        }
-      }
+  //     // Xử lý response theo cấu trúc có items array
+  //     let items = [];
+  //     if (response && typeof response === "object") {
+  //       if (Array.isArray(response.items)) {
+  //         items = response.items;
+  //       } else if (Array.isArray(response.data)) {
+  //         items = response.data;
+  //       } else if (Array.isArray(response)) {
+  //         items = response;
+  //       }
+  //     }
 
-      return mapApiResponseToEmployees(items);
-    } catch (error) {
-      console.error("Error in searchEmployees:", error);
-      throw error;
-    }
-  }
+  //     return mapApiResponseToEmployees(items);
+  //   } catch (error) {
+  //     console.error("Error in searchEmployees:", error);
+  //     throw error;
+  //   }
+  // }
 }
 
 // Export singleton instance

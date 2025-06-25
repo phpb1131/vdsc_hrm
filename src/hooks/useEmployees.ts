@@ -26,7 +26,7 @@ interface UseEmployeesReturn {
     employee: EmployeeUpdateRequest
   ) => Promise<void>;
   deleteEmployee: (id: number) => Promise<void>;
-  searchEmployees: (query: string) => Promise<void>;
+  // searchEmployees: (query: string) => Promise<void>;
   getEmployeeById: (id: number) => Promise<Employee | null>;
   refreshEmployees: () => Promise<void>;
   clearError: () => void;
@@ -127,30 +127,30 @@ export function useEmployees(
     [service]
   );
 
-  const searchEmployees = useCallback(
-    async (query: string) => {
-      try {
-        setLoading(true);
-        setError(null);
+  // const searchEmployees = useCallback(
+  //   async (query: string) => {
+  //     try {
+  //       setLoading(true);
+  //       setError(null);
 
-        if (!query.trim()) {
-          await loadEmployees();
-          return;
-        }
+  //       if (!query.trim()) {
+  //         await loadEmployees();
+  //         return;
+  //       }
 
-        const data = await service.searchEmployees(query);
-        setEmployees(data);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Không thể tìm kiếm nhân viên";
-        setError(errorMessage);
-        console.error("Error searching employees:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [service, loadEmployees]
-  );
+  //       const data = await service.searchEmployees(query);
+  //       setEmployees(data);
+  //     } catch (err) {
+  //       const errorMessage =
+  //         err instanceof Error ? err.message : "Không thể tìm kiếm nhân viên";
+  //       setError(errorMessage);
+  //       console.error("Error searching employees:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [service, loadEmployees]
+  // );
 
   const getEmployeeById = useCallback(
     async (id: number): Promise<Employee | null> => {
@@ -187,7 +187,7 @@ export function useEmployees(
     createEmployee,
     updateEmployee,
     deleteEmployee,
-    searchEmployees,
+    // searchEmployees,
     getEmployeeById,
     refreshEmployees,
     clearError,

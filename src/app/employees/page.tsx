@@ -163,12 +163,12 @@ export default function EmployeesPage() {
 
   return (
     <Container fluid className="p-0">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <h1 className="h3 mb-0">
           <i className="bi bi-people-fill me-2"></i>
           Quản lý nhân viên
         </h1>
-        <div className="d-flex gap-2">
+        <div className="d-flex flex-wrap gap-2">
           <CustomButton
             variant="success"
             onClick={handleAddEmployee}
