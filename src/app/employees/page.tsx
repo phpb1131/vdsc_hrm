@@ -4,7 +4,6 @@ import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
@@ -17,6 +16,18 @@ import ComboboxSelect from "@/components/ComboboxSelect";
 import { ParamType } from "@/constants/common";
 import DateTimePicker from "@/components/DateTimePicker";
 import DateRangePicker from "@/components/DateRangePicker";
+import CustomButton from "@/components/CustomButton";
+import {
+  Eye,
+  Edit3,
+  Trash2,
+  Plus,
+  Search,
+  RotateCcw,
+  Download,
+  RefreshCw,
+  AlarmClockCheck,
+} from "lucide-react";
 
 export default function EmployeesPage() {
   const router = useRouter();
@@ -57,6 +68,15 @@ export default function EmployeesPage() {
   const handleAddEmployee = () => {
     alert("Thêm nhân viên mới");
     // TODO: Implement add functionality
+  };
+
+  const handleExportEmployees = () => {
+    alert("Xuất dữ liệu nhân viên ra Excel");
+    // TODO: Implement export functionality
+  };
+
+  const handleRefreshData = () => {
+    refreshEmployees();
   };
 
   const handleDepartmentChange = useCallback((value: string) => {
@@ -142,16 +162,42 @@ export default function EmployeesPage() {
   }
 
   return (
-    <Container fluid className="p-0" style={{ minHeight: "80vh" }}>
+    <Container fluid className="p-0">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 mb-0">
           <i className="bi bi-people-fill me-2"></i>
           Quản lý nhân viên
         </h1>
-        <Button variant="primary" onClick={handleAddEmployee}>
-          <i className="bi bi-plus-circle me-2"></i>
-          Thêm nhân viên
-        </Button>
+        <div className="d-flex gap-2">
+          <CustomButton
+            variant="success"
+            onClick={handleAddEmployee}
+            disabled={loading}
+            icon={<Plus size={18} />}
+            title="Thêm nhân viên mới"
+          >
+            Thêm mới
+          </CustomButton>
+          <CustomButton
+            variant="outline-success"
+            onClick={handleExportEmployees}
+            disabled={loading}
+            icon={<Download size={16} />}
+            title="Xuất dữ liệu ra Excel"
+          >
+            Xuất Excel
+          </CustomButton>
+          <CustomButton
+            variant="outline-info"
+            onClick={handleRefreshData}
+            disabled={loading}
+            loading={loading}
+            icon={<RefreshCw size={16} />}
+            title="Làm mới dữ liệu"
+          >
+            Làm mới
+          </CustomButton>
+        </div>
       </div>
 
       {error && (
@@ -166,10 +212,15 @@ export default function EmployeesPage() {
             Lỗi
           </Alert.Heading>
           <p className="mb-2">{error}</p>
-          <Button variant="outline-danger" size="sm" onClick={refreshEmployees}>
-            <i className="bi bi-arrow-clockwise me-1"></i>
+          <CustomButton
+            variant="outline-danger"
+            onClick={refreshEmployees}
+            size="sm"
+            icon={<RefreshCw size={16} />}
+            title="Thử lại"
+          >
             Thử lại
-          </Button>
+          </CustomButton>
         </Alert>
       )}
 
@@ -181,10 +232,9 @@ export default function EmployeesPage() {
                 Danh sách nhân viên ({filteredEmployees.length}/
                 {employees.length})
               </h6>
-            </Col>{" "}
+            </Col>
             <Col md={10}>
               <Row className="g-2">
-                {" "}
                 <Col sm={3}>
                   <DateTimePicker
                     value={date}
@@ -220,30 +270,8 @@ export default function EmployeesPage() {
                       }}
                     />
                   </InputGroup>
-                </Col>{" "}
-                <Col sm={3}>
-                  <div className="d-flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="primary"
-                      onClick={handleSearch}
-                      title="Tìm kiếm"
-                    >
-                      Tìm kiếm
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline-secondary"
-                      onClick={handleClearFilter}
-                      title="Xóa bộ lọc"
-                    >
-                      Xóa bộ lọc
-                    </Button>
-                  </div>
                 </Col>
-              </Row>
-              <Row className="g-2">
-                <Col sm={3}>
+                <Col sm={6}>
                   <DateRangePicker
                     startDate={startDate}
                     endDate={endDate}
@@ -251,7 +279,32 @@ export default function EmployeesPage() {
                     onEndDateChange={setEndDate}
                   />
                 </Col>
+                <Col sm={3}>
+                  <div className="d-flex gap-2">
+                    <CustomButton
+                      variant="primary"
+                      onClick={handleSearch}
+                      disabled={loading}
+                      size="sm"
+                      icon={<Search size={18} />}
+                      title="Tìm kiếm"
+                    >
+                      {"Tìm kiếm"}
+                    </CustomButton>
+                    <CustomButton
+                      variant="outline-secondary"
+                      onClick={handleClearFilter}
+                      disabled={loading}
+                      size="sm"
+                      icon={<RotateCcw size={16} />}
+                      title="Xóa bộ lọc"
+                    >
+                      {"Xóa bộ lọc"}
+                    </CustomButton>
+                  </div>
+                </Col>
               </Row>
+              <Row className="g-2"></Row>
             </Col>
           </Row>
         </Card.Header>
@@ -265,13 +318,14 @@ export default function EmployeesPage() {
                   : "Không tìm thấy nhân viên phù hợp"}
               </p>{" "}
               {(currentSearchTerm || currentDepartmentFilter) && (
-                <Button
+                <CustomButton
                   variant="outline-primary"
-                  size="sm"
                   onClick={handleClearFilter}
+                  size="sm"
+                  icon={<RotateCcw size={16} />}
                 >
                   Xóa bộ lọc
-                </Button>
+                </CustomButton>
               )}
             </div>
           ) : (
@@ -369,42 +423,37 @@ export default function EmployeesPage() {
                             </span>
                           </td>
                           <td>
-                            <div className="btn-group" role="group">
-                              <Button
+                            <div className="d-flex gap-1">
+                              <CustomButton
+                                variant="info"
                                 size="sm"
-                                variant="outline-primary"
                                 onClick={() => handleView(employee)}
+                                icon={<Eye size={16} />}
                                 title="Xem chi tiết"
                               >
-                                <i className="bi bi-eye"></i>
                                 Xem
-                              </Button>
-                              <Button
+                              </CustomButton>
+                              <CustomButton
+                                variant="warning"
                                 size="sm"
-                                variant="outline-warning"
                                 onClick={() => handleEdit(employee)}
+                                icon={<Edit3 size={16} />}
                                 title="Chỉnh sửa"
                               >
-                                <i className="bi bi-pencil"></i>
                                 Sửa
-                              </Button>
-                              <Button
+                              </CustomButton>
+                              <CustomButton
+                                variant="danger"
                                 size="sm"
-                                variant="outline-danger"
-                                onClick={() => {
-                                  if (
-                                    window.confirm(
-                                      `Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`
-                                    )
-                                  ) {
-                                    handleDelete(employee.id);
-                                  }
-                                }}
+                                onClick={() => handleDelete(employee.id)}
+                                icon={<AlarmClockCheck size={16} />}
+                                confirmMessage={`Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`}
+                                confirmTitle="Xác nhận xóa"
                                 title="Xóa"
+                                disabled={loading}
                               >
-                                <i className="bi bi-trash"></i>
                                 Xóa
-                              </Button>
+                              </CustomButton>
                             </div>
                           </td>
                         </tr>
@@ -512,39 +561,37 @@ export default function EmployeesPage() {
                           </Row>
                         </Card.Body>
                         <Card.Footer className="text-end">
-                          <div className="btn-group" role="group">
-                            <Button
+                          <div className="d-flex gap-1 justify-content-end">
+                            <CustomButton
+                              variant="info"
                               size="sm"
-                              variant="outline-primary"
                               onClick={() => handleView(employee)}
+                              icon={<Eye size={16} />}
+                              title="Xem chi tiết"
                             >
-                              <i className="bi bi-eye me-1"></i>
                               Xem
-                            </Button>
-                            <Button
+                            </CustomButton>
+                            <CustomButton
+                              variant="warning"
                               size="sm"
-                              variant="outline-warning"
                               onClick={() => handleEdit(employee)}
+                              icon={<Edit3 size={16} />}
+                              title="Chỉnh sửa"
                             >
-                              <i className="bi bi-pencil me-1"></i>
                               Sửa
-                            </Button>
-                            <Button
+                            </CustomButton>
+                            <CustomButton
+                              variant="danger"
                               size="sm"
-                              variant="outline-danger"
-                              onClick={() => {
-                                if (
-                                  window.confirm(
-                                    `Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`
-                                  )
-                                ) {
-                                  handleDelete(employee.id);
-                                }
-                              }}
+                              onClick={() => handleDelete(employee.id)}
+                              icon={<Trash2 size={16} />}
+                              confirmMessage={`Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`}
+                              confirmTitle="Xác nhận xóa"
+                              title="Xóa"
+                              disabled={loading}
                             >
-                              <i className="bi bi-trash me-1"></i>
                               Xóa
-                            </Button>
+                            </CustomButton>
                           </div>
                         </Card.Footer>
                       </Card>
