@@ -112,7 +112,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
 
   return (
     <div className={`date-range-picker ${className}`}>
-      <Row className="g-2 align-items-end">
+      <Row className="g-2">
         {/* Từ ngày */}
         <Col xs={12} sm={6}>
           {showLabels && (

@@ -250,14 +250,12 @@ export default function EmployeesPage() {
                     value={selectedProduct}
                     onChange={handleProductChange}
                     placeholder="Tất cả"
+                    size="sm"
                     // required
                   />
                 </Col>
                 <Col sm={3}>
                   <InputGroup size="sm">
-                    <InputGroup.Text>
-                      <i className="bi bi-search"></i>
-                    </InputGroup.Text>
                     <Form.Control
                       type="text"
                       placeholder="Tìm kiếm..."
@@ -277,6 +275,7 @@ export default function EmployeesPage() {
                     endDate={endDate}
                     onStartDateChange={setStartDate}
                     onEndDateChange={setEndDate}
+                    size="sm"
                   />
                 </Col>
                 <Col sm={3}>

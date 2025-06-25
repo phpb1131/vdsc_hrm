@@ -17,10 +17,7 @@ interface DateTimePickerProps {
 
 const CustomInput = forwardRef<HTMLInputElement, any>(
   ({ value, onClick, placeholder, disabled, size }, ref) => (
-    <InputGroup size={size} style={{ width: "100%" }}>
-      <InputGroup.Text>
-        <i className="bi bi-calendar3"></i>
-      </InputGroup.Text>
+    <InputGroup size={size} className="w-100">
       <Form.Control
         ref={ref}
         value={value}
@@ -28,7 +25,6 @@ const CustomInput = forwardRef<HTMLInputElement, any>(
         placeholder={placeholder}
         disabled={disabled}
         readOnly
-        style={{ flex: 1 }}
       />
     </InputGroup>
   )
