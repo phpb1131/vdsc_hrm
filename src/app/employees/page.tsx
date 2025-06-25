@@ -26,7 +26,7 @@ import {
   RotateCcw,
   Download,
   RefreshCw,
-  AlarmClockCheck,
+  CircleX,
 } from "lucide-react";
 
 export default function EmployeesPage() {
@@ -55,9 +55,9 @@ export default function EmployeesPage() {
   const handleDelete = async (id: number) => {
     try {
       // await deleteEmployee(id);
-      alert("Xóa nhân viên thành công!");
+      alert("Xóa nhân viên thành công!" + id);
     } catch (err) {
-      alert("Không thể xóa nhân viên. Vui lòng thử lại.");
+      alert("Không thể xóa nhân viên. Vui lòng thử lại." + err);
     }
   };
 
@@ -78,10 +78,6 @@ export default function EmployeesPage() {
   const handleRefreshData = () => {
     refreshEmployees();
   };
-
-  const handleDepartmentChange = useCallback((value: string) => {
-    setDepartmentFilter(value);
-  }, []);
 
   const handleProductChange = useCallback((value: string) => {
     setSelectedProduct(value);
@@ -333,7 +329,7 @@ export default function EmployeesPage() {
               <div className="d-none d-lg-block">
                 <div className="table-responsive">
                   <Table striped hover className="mb-0">
-                    <thead className="table-dark">
+                    <thead className="table">
                       <tr>
                         <th>Nhân viên</th>
                         <th>Liên hệ</th>
@@ -445,7 +441,7 @@ export default function EmployeesPage() {
                                 variant="danger"
                                 size="sm"
                                 onClick={() => handleDelete(employee.id)}
-                                icon={<AlarmClockCheck size={16} />}
+                                icon={<CircleX size={16} />}
                                 confirmMessage={`Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`}
                                 confirmTitle="Xác nhận xóa"
                                 title="Xóa"
@@ -462,7 +458,7 @@ export default function EmployeesPage() {
                 </div>
               </div>
 
-              {/* Mobile/Tablet Cards */}
+              {/* Mobile/Tablet Cards
               <div className="d-block d-lg-none p-3">
                 <Row className="g-3">
                   {filteredEmployees.map((employee) => (
@@ -597,7 +593,7 @@ export default function EmployeesPage() {
                     </Col>
                   ))}
                 </Row>
-              </div>
+              </div> */}
             </>
           )}
         </Card.Body>
