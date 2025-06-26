@@ -93,13 +93,15 @@ export class EmployeeService {
   ): Promise<Employee[]> {
     try {
       // Chuyển đổi Date thành string ISO hoặc dùng default values
-      const defaultFromDate = "1990-06-23T02:40:43.097Z";
-      const defaultToDate = "2025-06-23T02:40:43.097Z";
+      const defaultFromDate = new Date("1990-06-23T02:40:43.097Z");
+      const defaultToDate = new Date("2025-06-23T02:40:43.097Z");
 
       const fromDateString = fromDate
         ? fromDate.toISOString()
-        : defaultFromDate;
-      const toDateString = toDate ? toDate.toISOString() : defaultToDate;
+        : defaultFromDate.toISOString();
+      const toDateString = toDate
+        ? toDate.toISOString()
+        : defaultToDate.toISOString();
 
       const requestBody = {
         fromDate: fromDateString,

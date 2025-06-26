@@ -82,7 +82,7 @@ export const ComboboxSelect = memo<ComboboxSelectProps>(
   ({
     paramType,
     paramCode = "",
-    userId = "CCQ_VDAM",
+    userId = "SINH.NH",
     value = "",
     onChange,
     placeholder = "Chọn...",
@@ -155,8 +155,16 @@ export const ComboboxSelect = memo<ComboboxSelectProps>(
           }
 
           if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Lỗi API: ${response.status}`);
+            let errorMessage = `Lỗi API: ${response.status}`;
+            try {
+              const errorData = await response.json();
+              errorMessage =
+                errorData?.message || errorData?.error || errorMessage;
+            } catch (parseError) {
+              // Nếu không parse được JSON, dùng message mặc định
+              console.warn("Cannot parse error response as JSON:", parseError);
+            }
+            throw new Error(errorMessage);
           }
 
           const data = await response.json();

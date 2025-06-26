@@ -324,277 +324,218 @@ export default function EmployeesPage() {
               )}
             </div>
           ) : (
-            <>
-              {/* Desktop Table */}
-              <div className="d-none d-lg-block">
-                <div className="table-responsive">
-                  <Table striped hover className="mb-0">
-                    <thead className="table">
-                      <tr>
-                        <th>Nhân viên</th>
-                        <th>Liên hệ</th>
-                        <th>Phòng ban</th>
-                        <th>Chức vụ</th>
-                        <th>Ngày vào làm</th>
-                        <th>Lương</th>
-                        <th>Trạng thái</th>
-                        <th style={{ width: "120px" }}>Thao tác</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredEmployees.map((employee) => (
-                        <tr key={employee.id}>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  fontSize: "16px",
-                                }}
-                              >
-                                {employee.fullName.charAt(0).toUpperCase()}
-                              </div>
-                              <div>
-                                <div className="fw-bold">
-                                  {employee.fullName}
-                                </div>
-                                <small className="text-muted">
-                                  {employee.employeeCode}
-                                </small>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <div>
-                              <div className="small">
-                                <i className="bi bi-envelope me-1"></i>
-                                <a
-                                  href={`mailto:${employee.email}`}
-                                  className="text-decoration-none"
-                                >
-                                  {employee.email}
-                                </a>
-                              </div>
-                              <div className="small text-muted">
-                                <i className="bi bi-telephone me-1"></i>
-                                <a
-                                  href={`tel:${employee.phone}`}
-                                  className="text-decoration-none"
-                                >
-                                  {employee.phone}
-                                </a>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <span className="badge bg-secondary">
-                              {employee.department}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="badge bg-info text-dark">
-                              {employee.position}
-                            </span>
-                          </td>
-                          <td>{formatDate(employee.hireDate)}</td>
-                          <td>
-                            <span className="fw-bold text-success">
-                              {formatCurrency(employee.salary)}
-                            </span>
-                          </td>
-                          <td>
-                            <span
-                              className={`badge ${
-                                employee.status === "active"
-                                  ? "bg-success"
-                                  : "bg-danger"
-                              }`}
-                            >
-                              {employee.status === "active"
-                                ? "Hoạt động"
-                                : "Tạm dừng"}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="d-flex gap-1">
-                              <CustomButton
-                                variant="info"
-                                size="sm"
-                                onClick={() => handleView(employee)}
-                                icon={<Eye size={16} />}
-                                title="Xem chi tiết"
-                              >
-                                Xem
-                              </CustomButton>
-                              <CustomButton
-                                variant="warning"
-                                size="sm"
-                                onClick={() => handleEdit(employee)}
-                                icon={<Edit3 size={16} />}
-                                title="Chỉnh sửa"
-                              >
-                                Sửa
-                              </CustomButton>
-                              <CustomButton
-                                variant="danger"
-                                size="sm"
-                                onClick={() => handleDelete(employee.id)}
-                                icon={<CircleX size={16} />}
-                                confirmMessage={`Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`}
-                                confirmTitle="Xác nhận xóa"
-                                title="Xóa"
-                                disabled={loading}
-                              >
-                                Xóa
-                              </CustomButton>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </div>
-
-              {/* Mobile/Tablet Cards
-              <div className="d-block d-lg-none p-3">
-                <Row className="g-3">
+            <div
+              className="table-responsive"
+              style={{
+                overflowX: "auto",
+                maxWidth: "100%",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <Table
+                striped
+                hover
+                className="mb-0"
+                style={{
+                  minWidth: "1400px",
+                  tableLayout: "fixed",
+                }}
+              >
+                <thead className="table">
+                  <tr>
+                    <th style={{ minWidth: "200px", width: "200px" }}>
+                      Nhân viên
+                    </th>
+                    <th style={{ minWidth: "250px", width: "250px" }}>
+                      Liên hệ
+                    </th>
+                    <th style={{ minWidth: "120px", width: "120px" }}>
+                      Phòng ban
+                    </th>
+                    <th style={{ minWidth: "120px", width: "120px" }}>
+                      Chức vụ
+                    </th>
+                    <th style={{ minWidth: "130px", width: "130px" }}>
+                      Ngày vào làm
+                    </th>
+                    <th style={{ minWidth: "150px", width: "150px" }}>Lương</th>
+                    <th style={{ minWidth: "120px", width: "120px" }}>
+                      Trạng thái
+                    </th>
+                    <th style={{ minWidth: "200px", width: "200px" }}>
+                      Thao tác
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
                   {filteredEmployees.map((employee) => (
-                    <Col key={employee.id} xs={12} md={6}>
-                      <Card className="h-100">
-                        <Card.Header className="pb-2">
-                          <div className="d-flex justify-content-between align-items-start">
-                            <div className="d-flex align-items-center">
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                                style={{
-                                  width: "50px",
-                                  height: "50px",
-                                  fontSize: "18px",
-                                }}
-                              >
-                                {employee.fullName.charAt(0).toUpperCase()}
-                              </div>
-                              <div>
-                                <h6 className="mb-1">{employee.fullName}</h6>
-                                <small className="text-muted">
-                                  {employee.employeeCode}
-                                </small>
-                              </div>
+                    <tr key={employee.id}>
+                      <td style={{ width: "200px" }}>
+                        <div className="d-flex align-items-center">
+                          <div
+                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              fontSize: "16px",
+                              flexShrink: 0,
+                            }}
+                          >
+                            {employee.fullName.charAt(0).toUpperCase()}
+                          </div>
+                          <div style={{ overflow: "hidden" }}>
+                            <div
+                              className="fw-bold"
+                              style={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {employee.fullName}
                             </div>
-                            <span
-                              className={`badge ${
-                                employee.status === "active"
-                                  ? "bg-success"
-                                  : "bg-danger"
-                              }`}
+                            <small
+                              className="text-muted"
+                              style={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
                             >
-                              {employee.status === "active"
-                                ? "Hoạt động"
-                                : "Tạm dừng"}
-                            </span>
+                              {employee.employeeCode}
+                            </small>
                           </div>
-                        </Card.Header>
-                        <Card.Body>
-                          <Row className="g-2 small">
-                            <Col xs={12}>
-                              <div className="d-flex align-items-center mb-1">
-                                <i className="bi bi-envelope me-2 text-muted"></i>
-                                <a
-                                  href={`mailto:${employee.email}`}
-                                  className="text-decoration-none"
-                                >
-                                  {employee.email}
-                                </a>
-                              </div>
-                            </Col>
-                            <Col xs={12}>
-                              <div className="d-flex align-items-center mb-1">
-                                <i className="bi bi-telephone me-2 text-muted"></i>
-                                <a
-                                  href={`tel:${employee.phone}`}
-                                  className="text-decoration-none"
-                                >
-                                  {employee.phone}
-                                </a>
-                              </div>
-                            </Col>
-                            <Col xs={6}>
-                              <div className="mb-2">
-                                <small className="text-muted">Phòng ban:</small>
-                                <div>
-                                  <span className="badge bg-secondary small">
-                                    {employee.department}
-                                  </span>
-                                </div>
-                              </div>
-                            </Col>
-                            <Col xs={6}>
-                              <div className="mb-2">
-                                <small className="text-muted">Chức vụ:</small>
-                                <div>
-                                  <span className="badge bg-info text-dark small">
-                                    {employee.position}
-                                  </span>
-                                </div>
-                              </div>
-                            </Col>
-                            <Col xs={6}>
-                              <small className="text-muted">
-                                Ngày vào làm:
-                              </small>
-                              <div>{formatDate(employee.hireDate)}</div>
-                            </Col>
-                            <Col xs={6}>
-                              <small className="text-muted">Lương:</small>
-                              <div className="fw-bold text-success">
-                                {formatCurrency(employee.salary)}
-                              </div>
-                            </Col>
-                          </Row>
-                        </Card.Body>
-                        <Card.Footer className="text-end">
-                          <div className="d-flex gap-1 justify-content-end">
-                            <CustomButton
-                              variant="info"
-                              size="sm"
-                              onClick={() => handleView(employee)}
-                              icon={<Eye size={16} />}
-                              title="Xem chi tiết"
+                        </div>
+                      </td>
+                      <td style={{ width: "250px" }}>
+                        <div>
+                          <div
+                            className="small"
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            <i className="bi bi-envelope me-1"></i>
+                            <a
+                              href={`mailto:${employee.email}`}
+                              className="text-decoration-none"
                             >
-                              Xem
-                            </CustomButton>
-                            <CustomButton
-                              variant="warning"
-                              size="sm"
-                              onClick={() => handleEdit(employee)}
-                              icon={<Edit3 size={16} />}
-                              title="Chỉnh sửa"
-                            >
-                              Sửa
-                            </CustomButton>
-                            <CustomButton
-                              variant="danger"
-                              size="sm"
-                              onClick={() => handleDelete(employee.id)}
-                              icon={<Trash2 size={16} />}
-                              confirmMessage={`Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`}
-                              confirmTitle="Xác nhận xóa"
-                              title="Xóa"
-                              disabled={loading}
-                            >
-                              Xóa
-                            </CustomButton>
+                              {employee.email}
+                            </a>
                           </div>
-                        </Card.Footer>
-                      </Card>
-                    </Col>
+                          <div
+                            className="small text-muted"
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            <i className="bi bi-telephone me-1"></i>
+                            <a
+                              href={`tel:${employee.phone}`}
+                              className="text-decoration-none"
+                            >
+                              {employee.phone}
+                            </a>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ width: "120px" }}>
+                        <span
+                          className="badge bg-secondary"
+                          style={{
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: "100%",
+                          }}
+                        >
+                          {employee.department}
+                        </span>
+                      </td>
+                      <td style={{ width: "120px" }}>
+                        <span
+                          className="badge bg-info text-dark"
+                          style={{
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: "100%",
+                          }}
+                        >
+                          {employee.position}
+                        </span>
+                      </td>
+                      <td style={{ width: "130px", whiteSpace: "nowrap" }}>
+                        {formatDate(employee.hireDate)}
+                      </td>
+                      <td style={{ width: "150px" }}>
+                        <span
+                          className="fw-bold text-success"
+                          style={{ whiteSpace: "nowrap" }}
+                        >
+                          {formatCurrency(employee.salary)}
+                        </span>
+                      </td>
+                      <td style={{ width: "120px" }}>
+                        <span
+                          className={`badge ${
+                            employee.status === "active"
+                              ? "bg-success"
+                              : "bg-danger"
+                          }`}
+                          style={{ whiteSpace: "nowrap" }}
+                        >
+                          {employee.status === "active"
+                            ? "Hoạt động"
+                            : "Tạm dừng"}
+                        </span>
+                      </td>
+                      <td style={{ width: "200px" }}>
+                        <div
+                          className="d-flex gap-1"
+                          style={{ flexWrap: "nowrap" }}
+                        >
+                          <CustomButton
+                            variant="info"
+                            size="sm"
+                            onClick={() => handleView(employee)}
+                            icon={<Eye size={16} />}
+                            title="Xem chi tiết"
+                          >
+                            Xem
+                          </CustomButton>
+                          <CustomButton
+                            variant="warning"
+                            size="sm"
+                            onClick={() => handleEdit(employee)}
+                            icon={<Edit3 size={16} />}
+                            title="Chỉnh sửa"
+                          >
+                            Sửa
+                          </CustomButton>
+                          <CustomButton
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDelete(employee.id)}
+                            icon={<CircleX size={16} />}
+                            confirmMessage={`Bạn có chắc chắn muốn xóa nhân viên ${employee.fullName}?`}
+                            confirmTitle="Xác nhận xóa"
+                            title="Xóa"
+                            disabled={loading}
+                          >
+                            Xóa
+                          </CustomButton>
+                        </div>
+                      </td>
+                    </tr>
                   ))}
-                </Row>
-              </div> */}
-            </>
+                </tbody>
+              </Table>
+            </div>
           )}
         </Card.Body>
       </Card>
