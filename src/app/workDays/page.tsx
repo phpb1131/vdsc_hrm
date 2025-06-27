@@ -26,7 +26,7 @@ function WorkDaysPage() {
   // Get unique departments
   const departments = useMemo(() => {
     return [...new Set(workDays.map((item) => item.department))];
-  }, []);
+  }, [workDays]);
 
   // Month mapping
   const months = [
@@ -244,7 +244,7 @@ function WorkDaysPage() {
               <small className="text-muted me-2">Bộ lọc đang áp dụng:</small>
               {searchTerm && (
                 <span className="badge bg-primary me-2">
-                  Tìm kiếm: "{searchTerm}"
+                  Tìm kiếm: &ldquo;{searchTerm}&rdquo;
                   <button
                     className="btn-close btn-close-white ms-1"
                     style={{ fontSize: "0.7em" }}

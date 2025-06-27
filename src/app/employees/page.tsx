@@ -20,7 +20,6 @@ import CustomButton from "@/components/CustomButton";
 import {
   Eye,
   Edit3,
-  Trash2,
   Plus,
   Search,
   RotateCcw,

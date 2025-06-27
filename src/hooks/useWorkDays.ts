@@ -5,7 +5,6 @@ import {
   WorkDays,
   WorkDaysCreateRequest,
   WorkDaysUpdateRequest,
-  WorkDaysFilterOptions,
 } from "../types/workDays";
 import { workDaysService } from "../services/workDaysService";
 

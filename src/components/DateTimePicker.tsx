@@ -15,7 +15,15 @@ interface DateTimePickerProps {
   showTime?: boolean; // Thêm option bật/tắt time picker
 }
 
-const CustomInput = forwardRef<HTMLInputElement, any>(
+interface CustomInputProps {
+  value?: string;
+  onClick?: () => void;
+  placeholder?: string;
+  disabled?: boolean;
+  size?: "sm" | "lg";
+}
+
+const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
   ({ value, onClick, placeholder, disabled, size }, ref) => (
     <InputGroup size={size} className="w-100">
       <Form.Control

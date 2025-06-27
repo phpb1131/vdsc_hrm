@@ -4,11 +4,15 @@ export const AuthTokenKey = "hrm_auth_token";
 export const RefreshTokenKey = "hrm_refresh_token";
 export const TokenExpiryKey = "hrm_token_expiry";
 
-interface TokenInfo {
-  accessToken: string;
-  refreshToken?: string;
-  expiresAt?: number;
-  tokenType?: string;
+// Interface cho user info
+interface UserInfo {
+  id?: string | number;
+  username?: string;
+  email?: string;
+  fullName?: string;
+  role?: string;
+  permissions?: string[];
+  [key: string]: unknown;
 }
 
 export class AuthService {
@@ -204,6 +208,7 @@ export class AuthService {
       });
       return true;
     } catch (error) {
+      console.error("❌ Error validating token format:", error);
       return false;
     }
   }
@@ -233,7 +238,7 @@ export class AuthService {
       return (
         !!token && this.isValidTokenFormat(token) && !this.isTokenExpired()
       );
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -261,10 +266,9 @@ export class AuthService {
         cookiesToClear.forEach((cookieName) => {
           document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure`;
         });
-
         console.log("🔐 All tokens cleared successfully");
-      } catch (error) {
-        console.error("❌ Error clearing tokens:", error);
+      } catch {
+        console.error("❌ Error clearing tokens");
       }
     }
   }
@@ -287,8 +291,8 @@ export class AuthService {
         console.log("🔐 Redirecting to login page...");
         window.location.href = "/login";
       }
-    } catch (error) {
-      console.error("❌ Error during logout:", error);
+    } catch {
+      console.error("❌ Error during logout");
       // Force redirect even on error
       if (typeof window !== "undefined") {
         window.location.href = "/login";
@@ -297,7 +301,7 @@ export class AuthService {
   }
 
   // Get user info
-  static getUserInfo(): any {
+  static getUserInfo(): UserInfo | null {
     if (typeof window !== "undefined") {
       const userInfo = localStorage.getItem("userInfo");
       return userInfo ? JSON.parse(userInfo) : null;
@@ -306,7 +310,7 @@ export class AuthService {
   }
 
   // Set user info
-  static setUserInfo(userInfo: any): void {
+  static setUserInfo(userInfo: UserInfo): void {
     if (typeof window !== "undefined") {
       localStorage.setItem("userInfo", JSON.stringify(userInfo));
     }

@@ -60,7 +60,7 @@ const CustomButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
       title,
       type = "button",
       confirmMessage,
-      confirmTitle = "Xác nhận",
+      //confirmTitle = "Xác nhận",
       id,
       role,
       "aria-label": ariaLabel,

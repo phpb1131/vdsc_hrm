@@ -8,8 +8,41 @@ import { AuthService } from "../utils/auth";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://localhost:7251/admin";
 
+// Interface cho API response item
+interface ApiEmployeeItem {
+  id?: number;
+  maKhachHang?: string;
+  maTaiKhoanGiaoDich?: string;
+  hoTenKhachHang?: string;
+  fullName?: string;
+  name?: string;
+  email?: string;
+  soDiDong?: string;
+  soDienThoaiLienHe?: string;
+  phone?: string;
+  chucVu?: string;
+  position?: string;
+  ngheNghiep?: string;
+  department?: string;
+  createdTime?: string;
+  salary?: number;
+  state?: string;
+  objStatus?: number;
+  [key: string]: unknown; // Cho các field khác không biết trước
+}
+
+// Interface cho API response structure
+interface ApiResponse {
+  items?: ApiEmployeeItem[];
+  data?: ApiEmployeeItem[];
+  totalItems?: number;
+  currentPage?: number;
+  totalPages?: number;
+  [key: string]: unknown;
+}
+
 // Helper function để mapping dữ liệu từ API response sang Employee format
-function mapApiResponseToEmployees(apiItems: any[]): Employee[] {
+function mapApiResponseToEmployees(apiItems: ApiEmployeeItem[]): Employee[] {
   // Validation đầu vào
   if (!Array.isArray(apiItems)) {
     console.error(
@@ -18,7 +51,7 @@ function mapApiResponseToEmployees(apiItems: any[]): Employee[] {
     );
     return [];
   }
-  return apiItems.map((item: any, index: number) => ({
+  return apiItems.map((item: ApiEmployeeItem, index: number) => ({
     id: item.id || index + 1,
     employeeCode:
       item.maKhachHang ||
@@ -115,7 +148,7 @@ export class EmployeeService {
         profileStatus: "",
         accountStatus: "",
       };
-      const response = await this.fetchApi<any>(
+      const response = await this.fetchApi<ApiResponse>(
         "/admin/AdminCustomer/QLThongTinKhachHang_TruyVanDanhSach",
         {
           method: "POST",
@@ -124,7 +157,7 @@ export class EmployeeService {
       );
 
       // Xử lý response theo cấu trúc: { totalItems, currentPage, totalPages, items: [...] }
-      let items = [];
+      let items: ApiEmployeeItem[] = [];
 
       if (response && typeof response === "object") {
         if (Array.isArray(response.items)) {
@@ -132,7 +165,7 @@ export class EmployeeService {
         } else if (Array.isArray(response.data)) {
           items = response.data;
         } else if (Array.isArray(response)) {
-          items = response;
+          items = response as ApiEmployeeItem[];
         } else {
           //console.warn("API response không có cấu trúc mong đợi:", response);
           items = [];
@@ -151,7 +184,7 @@ export class EmployeeService {
   async getEmployeeById(id: number): Promise<Employee> {
     try {
       // Gọi API với query string id
-      const response = await this.fetchApi<any>(
+      const response = await this.fetchApi<ApiResponse | ApiEmployeeItem>(
         `/admin/AdminCustomer/QLThongTinKhachHang_TruyVanThongTin?id=${id}`,
         {
           method: "POST",
@@ -160,21 +193,24 @@ export class EmployeeService {
 
       // Nếu API trả về direct object (single employee)
       if (response && !Array.isArray(response)) {
-        const mappedEmployee = mapApiResponseToEmployees([response]);
+        const mappedEmployee = mapApiResponseToEmployees([
+          response as ApiEmployeeItem,
+        ]);
         if (mappedEmployee.length > 0) {
           return mappedEmployee[0];
         }
       }
 
       // Nếu API trả về cấu trúc có items array
-      let items = [];
+      let items: ApiEmployeeItem[] = [];
       if (response && typeof response === "object") {
-        if (Array.isArray(response.items)) {
-          items = response.items;
-        } else if (Array.isArray(response.data)) {
-          items = response.data;
+        const apiResponse = response as ApiResponse;
+        if (Array.isArray(apiResponse.items)) {
+          items = apiResponse.items;
+        } else if (Array.isArray(apiResponse.data)) {
+          items = apiResponse.data;
         } else if (Array.isArray(response)) {
-          items = response;
+          items = response as ApiEmployeeItem[];
         }
       }
 

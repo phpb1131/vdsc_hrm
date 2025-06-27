@@ -110,6 +110,10 @@ export const ComboboxSelect = memo<ComboboxSelectProps>(
             setItems(result);
             return;
           } catch (error) {
+            console.error(
+              `❌ Error loading combobox data for ${paramType}:`,
+              error
+            );
             // Nếu lỗi, tiếp tục fetch mới
           }
         }

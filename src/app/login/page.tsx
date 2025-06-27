@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
@@ -9,7 +9,8 @@ import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import { AuthService } from "../../utils/auth";
 
-export default function LoginPage() {
+// Component con chứa logic sử dụng useSearchParams
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl");
@@ -28,6 +29,7 @@ export default function LoginPage() {
       [name]: value,
     }));
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -157,5 +159,32 @@ export default function LoginPage() {
         </Card>
       </div>
     </Container>
+  );
+}
+
+// Loading component cho Suspense fallback
+function LoginLoading() {
+  return (
+    <Container className="min-vh-100 d-flex align-items-center justify-content-center">
+      <div style={{ maxWidth: "400px", width: "100%" }}>
+        <Card className="shadow">
+          <Card.Body className="p-5 text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Đang tải...</span>
+            </div>
+            <p className="text-muted">Đang tải trang đăng nhập...</p>
+          </Card.Body>
+        </Card>
+      </div>
+    </Container>
+  );
+}
+
+// Component chính với Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginLoading />}>
+      <LoginForm />
+    </Suspense>
   );
 }

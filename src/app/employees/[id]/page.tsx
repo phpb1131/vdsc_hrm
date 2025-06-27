@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
@@ -22,11 +22,7 @@ export default function EmployeeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadEmployeeDetail();
-  }, [employeeId]);
-
-  const loadEmployeeDetail = async () => {
+  const loadEmployeeDetail = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -38,7 +34,11 @@ export default function EmployeeDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [employeeId]);
+
+  useEffect(() => {
+    loadEmployeeDetail();
+  }, [loadEmployeeDetail]);
 
   const handleEdit = () => {
     // TODO: Navigate to edit page

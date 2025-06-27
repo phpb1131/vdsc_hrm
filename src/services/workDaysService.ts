@@ -2,18 +2,63 @@ import {
   WorkDays,
   WorkDaysCreateRequest,
   WorkDaysUpdateRequest,
-  WorkDaysFilterOptions,
 } from "../types/workDays";
 import { AuthService } from "../utils/auth";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://localhost:7251/admin";
 
+// Interface cho API response item
+interface ApiWorkDaysItem {
+  id?: number;
+  hoTenKhachHang?: string;
+  fullName?: string;
+  name?: string;
+  chucVu?: string;
+  department?: string;
+  phongBan?: string;
+  thang1?: number;
+  thang2?: number;
+  thang3?: number;
+  thang4?: number;
+  thang5?: number;
+  thang6?: number;
+  thang7?: number;
+  thang8?: number;
+  thang9?: number;
+  thang10?: number;
+  thang11?: number;
+  thang12?: number;
+  january?: number;
+  february?: number;
+  march?: number;
+  april?: number;
+  may?: number;
+  june?: number;
+  july?: number;
+  august?: number;
+  september?: number;
+  october?: number;
+  november?: number;
+  december?: number;
+  [key: string]: unknown;
+}
+
+// Interface cho API response structure
+interface ApiWorkDaysResponse {
+  items?: ApiWorkDaysItem[];
+  data?: ApiWorkDaysItem[];
+  totalItems?: number;
+  currentPage?: number;
+  totalPages?: number;
+  [key: string]: unknown;
+}
+
 // Helper function để mapping dữ liệu từ API response sang WorkDays format
-function mapApiResponseToWorkDays(apiItems: any[]): WorkDays[] {
+function mapApiResponseToWorkDays(apiItems: ApiWorkDaysItem[]): WorkDays[] {
   if (!Array.isArray(apiItems)) return [];
 
-  return apiItems.map((item: any, index: number) => ({
+  return apiItems.map((item: ApiWorkDaysItem, index: number) => ({
     id: item.id || index + 1,
     employee:
       item.hoTenKhachHang ||
@@ -142,7 +187,7 @@ export class WorkDaysService {
         perPage: 100,
       };
 
-      const response = await this.fetchApi<any>(
+      const response = await this.fetchApi<ApiWorkDaysResponse>(
         "/admin/AdminWorkday/GetListWorkday",
         {
           method: "POST",
@@ -150,7 +195,10 @@ export class WorkDaysService {
         }
       );
 
-      const items = response.items || response.data || response || [];
+      const items =
+        response.items ||
+        response.data ||
+        (Array.isArray(response) ? response : []);
       return mapApiResponseToWorkDays(items);
     } catch (error) {
       console.error("Error in getAllWorkDays:", error);
@@ -182,7 +230,7 @@ export class WorkDaysService {
    */
   async createWorkDays(workDays: WorkDaysCreateRequest): Promise<WorkDays> {
     try {
-      const response = await this.fetchApi<any>(
+      const response = await this.fetchApi<ApiWorkDaysItem>(
         "/admin/AdminWorkday/CreateWorkday",
         {
           method: "POST",
@@ -206,7 +254,7 @@ export class WorkDaysService {
     workDays: WorkDaysUpdateRequest
   ): Promise<WorkDays> {
     try {
-      const response = await this.fetchApi<any>(
+      const response = await this.fetchApi<ApiWorkDaysItem>(
         `/admin/AdminWorkday/UpdateWorkday/${id}`,
         {
           method: "PUT",
@@ -248,7 +296,7 @@ export class WorkDaysService {
         perPage: 100,
       };
 
-      const response = await this.fetchApi<any>(
+      const response = await this.fetchApi<ApiWorkDaysResponse>(
         "/admin/AdminWorkday/GetListWorkday",
         {
           method: "POST",
@@ -256,7 +304,10 @@ export class WorkDaysService {
         }
       );
 
-      const items = response.items || response.data || response || [];
+      const items =
+        response.items ||
+        response.data ||
+        (Array.isArray(response) ? response : []);
       return mapApiResponseToWorkDays(items);
     } catch (error) {
       console.error("Error in getWorkDaysByMonth:", error);
@@ -277,7 +328,7 @@ export class WorkDaysService {
         perPage: 100,
       };
 
-      const response = await this.fetchApi<any>(
+      const response = await this.fetchApi<ApiWorkDaysResponse>(
         "/admin/AdminWorkday/GetListWorkday",
         {
           method: "POST",
@@ -285,7 +336,10 @@ export class WorkDaysService {
         }
       );
 
-      const items = response.items || response.data || response || [];
+      const items =
+        response.items ||
+        response.data ||
+        (Array.isArray(response) ? response : []);
       return mapApiResponseToWorkDays(items);
     } catch (error) {
       console.error("Error in getWorkDaysByEmployee:", error);
